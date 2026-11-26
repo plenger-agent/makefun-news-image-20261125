@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Hand-in program for make.fun competition news-image-20261125.
+"""Hand-in program for make.fun competition news-image-20261125, v3.
 
 Copies the committed front-page image (entry.png, rendered locally by
-gen.py) into the output directory as entry.png, then verifies the copy
-is byte-complete. Standard library only, so it runs in the grader's
-bare Python 3.13 image. Deterministic: both runs write exactly the
-same bytes.
+gen.py: 50 stories of Wednesday 25 November 2026 on one page) into the
+output directory as entry.png, then verifies the copy is byte-complete
+and within the gate's size cap. Standard library only, so it runs in
+the grader's bare Python 3.13 image. Deterministic: both runs write
+exactly the same bytes.
 """
 
 import os
@@ -26,6 +27,9 @@ def main() -> int:
     dest = os.path.join(out_dir, "entry.png")
     shutil.copyfile(SOURCE, dest)
     if os.path.getsize(dest) != os.path.getsize(SOURCE):
+        return 1
+    # The gate caps the image at 1 MiB; refuse to hand in anything over.
+    if os.path.getsize(dest) > 1048576:
         return 1
     with open(dest, "rb") as fh:
         magic = fh.read(8)
